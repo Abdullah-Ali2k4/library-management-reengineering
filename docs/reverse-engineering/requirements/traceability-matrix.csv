@@ -1,0 +1,159 @@
+ID,Type,Title,Evidence Source,Verification Status,Confidence,Related Requirements,Notes
+FR-001,Functional Requirement,Login with email and password,auth/index.php:63-94; auth/login_handler.php:13-50,Verified,High,UC-01; BR-001,
+FR-002,Functional Requirement,Admin-only authentication,auth/login_handler.php:47-51,Verified,High,UC-01; BR-001,Conflicts with FR-004 (C-01)
+FR-003,Functional Requirement,Generic login failure message,auth/login_handler.php:84-90,Verified,High,UC-01; BR-002,
+FR-004,Functional Requirement,Public registration creating staff accounts,auth/register.php:19-62 (role at :51),Verified (conflicting),High,UC-03; BR-009; BR-011,Staff can never log in (C-01; GAP-004)
+FR-005,Functional Requirement,Registration input validation and uniqueness,auth/register.php:25-46; database/user_schema.sql:10-11,Verified,High,UC-03; BR-010,
+FR-006,Functional Requirement,Logout destroys session,auth/logout.php:1-6,Verified,High,UC-02; BR-005,Remember-me cookie not cleared
+FR-007,Functional Requirement,Session regeneration on login,auth/login_handler.php:54,Verified,High,UC-01; BR-003,
+FR-008,Functional Requirement,Remember-me extends cookie ~30 days,auth/login_handler.php:63-78,Verified (limited),High,UC-01; BR-004,Session-cookie only; no persistent token
+FR-009,Functional Requirement,Password visibility toggle on login,auth/index.php:78-83; auth/index.php:105-111,Verified,High,UC-01,
+FR-010,Functional Requirement,Protected pages redirect to login,includes/auth.php:27-32; index.php:4; books/view.php:4,Partially verified,High,BR-006; GAP-005,Enforced on 2 of 18 pages only
+FR-011,Functional Requirement,Dashboard shows total books,index.php:7; index.php:23-27,Verified,High,UC-04,
+FR-012,Functional Requirement,Dashboard shows total authors,index.php:8; index.php:28-32,Verified,High,UC-04,
+FR-013,Functional Requirement,Dashboard shows total members,index.php:9; index.php:33-37,Verified,High,UC-04,
+FR-014,Functional Requirement,Dashboard shows currently issued count,index.php:10; index.php:38-42,Verified,High,UC-04,
+FR-015,Functional Requirement,Dashboard shows overdue count,index.php:11; index.php:43-47,Verified,High,UC-04; BR-039,
+FR-016,Functional Requirement,Dashboard quick-action links,index.php:50-69,Verified,High,UC-04,
+FR-017,Functional Requirement,Book catalog list with author and availability,books/view.php:8-49,Verified,High,UC-05,Page requires login; mutations do not
+FR-018,Functional Requirement,Add book with required title and author,books/add.php:10-54; books/add.php:78-107,Verified,High,UC-06; BR-013,No authentication (GAP-005)
+FR-019,Functional Requirement,New book fully available,books/add.php:42-43,Verified,High,UC-06; BR-017,
+FR-020,Functional Requirement,Edit all book fields including manual availability,books/edit.php:18-66,Verified,High,UC-07; BR-018,Dual-writer availability (C-05)
+FR-021,Functional Requirement,Copy-count validation rules,books/edit.php:32-40; books/add.php:25-27,Verified,High,UC-07; BR-014; BR-015,Total may drop below copies on loan (C-08)
+FR-022,Functional Requirement,ISBN uniqueness,books/add.php:28-38; books/edit.php:41-51; database/library_db.sql:29,Verified,High,UC-06; UC-07; BR-016,No format validation (GAP-014)
+FR-023,Functional Requirement,Block deletion of books with active issues,books/delete.php:10-25,Verified,High,UC-08; BR-019,GET-based delete without CSRF (GAP-006)
+FR-024,Functional Requirement,Book deletion cascades issue history,database/library_db.sql:52; books/delete.php:27-31,Verified (questionable intent),High,UC-08; BR-020; NFR-023,History destroyed (C-04)
+FR-025,Functional Requirement,Author list with book counts,authors/view.php:5-44,Verified,High,UC-09,No authentication (GAP-005)
+FR-026,Functional Requirement,Add author with required names,authors/add.php:7-30,Verified,High,UC-10; BR-013-analogue,
+FR-027,Functional Requirement,Edit author details,authors/edit.php:13-36,Verified,High,UC-10,
+FR-028,Functional Requirement,Author deletion sets book author to NULL,authors/delete.php:10-16; database/library_db.sql:32,Verified,High,UC-11; BR-021,No active-issue guard needed by design
+FR-029,Functional Requirement,Member list with active issue counts,members/view.php:5-46,Verified,High,UC-12,No authentication (GAP-005)
+FR-030,Functional Requirement,Add member with required unique email,members/add.php:7-42; database/library_db.sql:38-40,Verified,High,UC-13; BR-023,
+FR-031,Functional Requirement,Edit member with unique email,members/edit.php:13-48,Verified,High,UC-13; BR-023,
+FR-032,Functional Requirement,Block deletion of members with active issues,members/delete.php:10-25,Verified,High,UC-14; BR-024,GET-based delete without CSRF (GAP-006)
+FR-033,Functional Requirement,Member deletion cascades issue history,database/library_db.sql:53; members/delete.php:27-31,Verified (questionable intent),High,UC-14; BR-025; NFR-023,History destroyed (C-04)
+FR-034,Functional Requirement,Issue form lists available books and all members,issue_return/issue.php:8-9; issue_return/issue.php:88-107,Verified,High,UC-15,No authentication (GAP-005)
+FR-035,Functional Requirement,Issue a book to a member with due date,issue_return/issue.php:11-65,Verified,High,UC-15; BR-027,
+FR-036,Functional Requirement,Due date not in past; default today+14,issue_return/issue.php:22-26; issue_return/issue.php:109-112,Verified,High,UC-15; BR-028; BR-031,14-day default is inferred assumption
+FR-037,Functional Requirement,Atomic issue with row-lock recheck,issue_return/issue.php:28-64,Verified,High,UC-15; BR-029; BR-030; NFR-019; NFR-020,
+FR-038,Functional Requirement,Refuse issue when no copy available,issue_return/issue.php:36-44,Verified,High,UC-15; BR-029,
+FR-039,Functional Requirement,Return form lists outstanding loans,issue_return/return.php:8-15; issue_return/return.php:92-108,Verified,High,UC-16,
+FR-040,Functional Requirement,Atomic return with dated record and availability restore,issue_return/return.php:24-59,Verified,High,UC-16; BR-034; BR-035; BR-036,
+FR-041,Functional Requirement,Reject double return,issue_return/return.php:38-40,Verified,High,UC-16; BR-034,
+FR-042,Functional Requirement,Status page lists all issues with labels,issue_return/status.php:7-55,Verified,High,UC-17,No authentication (GAP-005)
+FR-043,Functional Requirement,Status ordering active-first then due date,issue_return/status.php:12-14,Verified,High,UC-17,NFR-017 hot query without composite index
+FR-044,Functional Requirement,Overdue derivation and highlighting,issue_return/status.php:33-35; issue_return/status.php:44-45,Verified,High,UC-17; BR-039,
+FR-045,Functional Requirement,Search by title/category/author-name substring,search.php:8-23,Verified,High,UC-18; BR-043,No authentication (GAP-005)
+FR-046,Functional Requirement,Search results with edit link,search.php:36-64,Verified,High,UC-18,
+FR-047,Functional Requirement,Connection test utility page,test_connection.php:15-30,Verified (temporary artifact),High,UC-19; GAP-010,Self-declared temporary; still committed
+BR-001,Business Rule,Only role admin may authenticate,auth/login_handler.php:47-51,Verified fact,High,FR-002; UC-01,Conflicts with registration policy (CR-01)
+BR-002,Business Rule,Generic login error message,auth/login_handler.php:86-90,Verified fact,High,FR-003,
+BR-003,Business Rule,Session regenerated on login,auth/login_handler.php:54,Verified fact,High,FR-007,
+BR-004,Business Rule,Remember-me extends session cookie 30 days,auth/login_handler.php:63-78,Verified fact,High,FR-008,
+BR-005,Business Rule,Logout does not clear remember-me cookie,auth/logout.php:1-6; absence of cookie reset,Verified fact,High,FR-006; FR-008,
+BR-006,Business Rule,Only 2 of 18 pages enforce authentication,index.php:4; books/view.php:4; absence elsewhere,Verified fact,High,FR-010; GAP-005,CR-06 access-policy ambiguity
+BR-007,Business Rule,No role check applied anywhere in-app,includes/auth.php:34-40; zero call sites,Verified fact (absence),High,GAP-003,
+BR-008,Business Rule,No login rate limiting lockout or session timeout,Absence confirmed codebase-wide,Absence confirmed,High,NFR-006; NFR-007,
+BR-009,Business Rule,Registration always assigns role staff,auth/register.php:51,Verified fact,High,FR-004; UC-03,CR-01
+BR-010,Business Rule,Registration validation and uniqueness rules,auth/register.php:25-46; database/user_schema.sql:10-11,Verified fact,High,FR-005,
+BR-011,Business Rule,Staff accounts can never sign in,login_handler.php:49 + register.php:51 (consequence),Verified fact,High,FR-004; GAP-004,CR-01 dead-end
+BR-012,Business Rule,Seeded admin with published credentials; password change instructed but absent,database/user_schema.sql:20-32; GAP-001,Verified fact (seed + absence),High,GAP-001; C-02,
+BR-013,Business Rule,Book requires title and linked author,books/add.php:19-24; books/edit.php:26-31,Verified fact,High,FR-018; FR-020,
+BR-014,Business Rule,total_copies at least 1,books/add.php:25-27; books/edit.php:32-34,Verified fact,High,FR-021,
+BR-015,Business Rule,available_copies non-negative and at most total,books/edit.php:35-40,Verified fact,High,FR-021,
+BR-016,Business Rule,ISBN unique when provided,books/add.php:28-38; books/edit.php:41-51; database/library_db.sql:29,Verified fact,High,FR-022,
+BR-017,Business Rule,New book available equals total,books/add.php:42-43,Verified fact,High,FR-019,
+BR-018,Business Rule,available_copies manually editable independent of issues,books/edit.php:24; books/edit.php:57-58,Verified fact,High,FR-020; BR-038,CR-02 availability ambiguity
+BR-019,Business Rule,Books with active issues not deletable,books/delete.php:11-25,Verified fact,High,FR-023; UC-08,
+BR-020,Business Rule,Deleting a book cascades all its issue history,database/library_db.sql:52; books/delete.php:27-31,Verified fact,High,FR-024; NFR-023,CR-03 retention ambiguity
+BR-021,Business Rule,Author deletion sets books author to NULL,database/library_db.sql:32; authors/delete.php:10-16,Verified fact,High,FR-028; UC-11,
+BR-022,Business Rule,No ISBN format or category vocabulary validation,books/add.php; books/edit.php (absence),Absence confirmed,High,GAP-014,
+BR-023,Business Rule,Member email required unique valid; phone optional,members/add.php:12-29; members/edit.php:18-35; database/library_db.sql:38-40,Verified fact,High,FR-030; FR-031,
+BR-024,Business Rule,Members with active issues not deletable,members/delete.php:11-25,Verified fact,High,FR-032; UC-14,
+BR-025,Business Rule,Deleting a member cascades all their issue history,database/library_db.sql:53; members/delete.php:27-31,Verified fact,High,FR-033; NFR-023,CR-03 retention ambiguity
+BR-026,Business Rule,No member eligibility rules of any kind,database/library_db.sql:36-41; no checks in issue.php,Absence confirmed,High,GAP-015,
+BR-027,Business Rule,Issue requires book member and due date,issue_return/issue.php:16-23,Verified fact,High,FR-035; UC-15,
+BR-028,Business Rule,Due date not earlier than today,issue_return/issue.php:24-26,Verified fact,High,FR-036; UC-15,
+BR-029,Business Rule,Issue only when available at least 1 under row lock,issue_return/issue.php:36-44,Verified fact,High,FR-037; FR-038; NFR-019,
+BR-030,Business Rule,Issue atomically decrements availability and inserts record,issue_return/issue.php:46-58,Verified fact,High,FR-037; NFR-020,
+BR-031,Business Rule,Standard loan period is 14 days,issue_return/issue.php:111 (form default only),Inferred assumption,Medium,FR-036; CR-04,Not enforced server-side; needs stakeholder confirmation
+BR-032,Business Rule,No per-member loan limit or same-title restriction,No checks in issue.php (absence),Absence confirmed,High,GAP-015,
+BR-033,Business Rule,Book/member existence enforced only by FK constraints,No existence checks in issue.php; database/library_db.sql:52-53,Verified fact (design observation),High,CR-07,
+BR-034,Business Rule,Only issued records returnable; double return rejected,issue_return/return.php:38-40,Verified fact,High,FR-040; FR-041; UC-16,
+BR-035,Business Rule,Return date always server current date,issue_return/return.php:42,Verified fact,High,FR-040; UC-16,No backdating possible
+BR-036,Business Rule,Return atomically sets returned with date and increments availability,issue_return/return.php:44-52,Verified fact,High,FR-040; NFR-020,
+BR-037,Business Rule,No renewals partial returns or extensions,No renewal code (absence),Absence confirmed,High,,
+BR-038,Business Rule,Availability dual-maintained with no reconciliation,issue_return/issue.php; issue_return/return.php; books/edit.php,Verified fact,High,FR-020; CR-02; GAP-012,
+BR-039,Business Rule,Overdue is derived status issued and due date before today,index.php:11; issue_return/status.php:33,Verified fact,High,FR-015; FR-044,
+BR-040,Business Rule,Status enum limited to issued and returned,database/library_db.sql:51,Verified fact,High,,No overdue/lost/cancelled states
+BR-041,Business Rule,Overdue has no operational consequence,No fine notify or restrict code (absence),Absence confirmed,High,GAP-008,
+BR-042,Business Rule,Overdue date comparison consistent for ISO dates,index.php:11; issue_return/status.php:33,Verified fact,High,,
+BR-043,Business Rule,Search matches title category author first or last name,search.php:10-20,Verified fact,High,FR-045; UC-18,
+BR-044,Business Rule,Search case-insensitive via default ci collation,config/db.php:25; schema without explicit collation,Inferred assumption,Medium,BR-043,Not verified against live server
+BR-045,Business Rule,Empty search query returns no results,search.php:8; search.php:36,Verified fact,High,,
+BR-046,Business Rule,ISBN is not searchable,search.php:14-17 (absence),Absence confirmed,High,GAP-014,
+NFR-001,Non-Functional Requirement,Password hashing with bcrypt,auth/register.php:50; auth/login_handler.php:50; database/user_schema.sql:30,Met (evidence),High,,Target met
+NFR-002,Non-Functional Requirement,SQL-injection resistance via prepared statements,All user-influenced queries use prepare/bind_param; README Usage Notes,Met (evidence; doc conflict C-07),High,,README security claim may be stale
+NFR-003,Non-Functional Requirement,XSS output escaping,htmlspecialchars at output sites; authors/add.php:87-89 and issue_return/issue.php:93-94 unescaped option values,Substantially met,High,,Low-risk exceptions are DB integers
+NFR-004,Non-Functional Requirement,Access control on non-public pages,index.php:4; books/view.php:4; includes/auth.php:34-40 (unused),Not met; proposed target,High,GAP-005; BR-006; CR-06,Needs stakeholder role model
+NFR-005,Non-Functional Requirement,CSRF protection on mutations,No tokens anywhere; GET deletes in books/view.php:40-42 authors/view.php:34-36 members/view.php:37-39,Not met; proposed target,High,GAP-006,README acknowledges CSRF weakness
+NFR-006,Non-Functional Requirement,Session hygiene timeouts and cookie cleanup,auth/login_handler.php:54 met; no timeouts; auth/logout.php:1-6,Partially met; proposed target,High,BR-005; BR-008,
+NFR-007,Non-Functional Requirement,Brute-force resistance,Absence confirmed,Not met; proposed target,High,BR-008,
+NFR-008,Non-Functional Requirement,No debug exposure in deployable builds,config/paths.php:54-63; test_connection.php:9-12,Not met; proposed target,High,GAP-010; FR-047,Both self-labeled temporary
+NFR-009,Non-Functional Requirement,Security headers,Absence confirmed,Not met; proposed target,High,,Values TBD
+NFR-010,Non-Functional Requirement,Configuration secrecy for shared deployments,config/db.php:11-14 hardcoded; README local-stack context,Not met for shared deploys; proposed target,High,Documented local constraint,Acceptable for documented XAMPP use
+NFR-011,Non-Functional Requirement,Responsive layout,includes/header.php:41-51; assets/js/validate.js:56-89; assets/css/style.css,Implemented (untested),Medium,,No user-testing evidence
+NFR-012,Non-Functional Requirement,Client-side input assistance,assets/js/validate.js:10-54,Met,High,,Server-side validation also present
+NFR-013,Non-Functional Requirement,Consistent navigation,includes/header.php:65-91,Met,High,,
+NFR-014,Non-Functional Requirement,Post/Redirect/Get after mutations,books/add.php:10 and :62-66 same-response success,Partially met; proposed target,High,,Refresh re-submits forms
+NFR-015,Non-Functional Requirement,Accessibility baseline,includes/header.php:42; assets/js/validate.js:96-99 only ARIA usage,Largely not met; proposed target,Medium,,Standard TBD
+NFR-016,Non-Functional Requirement,Bounded list retrieval with pagination,No LIMIT on any list (books/view.php:8-13; members/view.php:5-12; issue_return/status.php:7-15),Not met; proposed target,High,GAP-007,Page size TBD
+NFR-017,Non-Functional Requirement,Indexed access paths,PKs and UNIQUE only; no composite index on issued_books(status due_date),Partially met; proposed target,High,FR-043; index.php:11,
+NFR-018,Non-Functional Requirement,Dashboard response time,5 sequential COUNTs after output starts (index.php:5-11),Unmeasured,Medium,,No volume or ms target documented
+NFR-019,Non-Functional Requirement,Concurrent-issue safety,issue_return/issue.php:31-63 SELECT FOR UPDATE,Met (static evidence),High,BR-029,Not load-tested
+NFR-020,Non-Functional Requirement,Atomicity of issue and return,issue_return/issue.php:31-63; issue_return/return.php:25-59,Met,High,BR-030; BR-036,
+NFR-021,Non-Functional Requirement,Referential integrity via foreign keys,database/library_db.sql:32; :52-53,Met with caveat,High,C-04; NFR-023,CASCADE destroys history
+NFR-022,Non-Functional Requirement,Graceful database failure handling,config/db.php:20-22 die; unhandled query results (index.php:7-11),Weak; proposed target,High,,
+NFR-023,Non-Functional Requirement,Durable lending history,ON DELETE CASCADE database/library_db.sql:52-53; app guards active only,Not met / intent unknown,High,C-04; BR-020; BR-025,Retention policy needed
+NFR-024,Non-Functional Requirement,Auditability of actions,No logging or audit tables; issued_books has no staff reference,Absence confirmed; proposed target,High,GAP-011,
+NFR-025,Non-Functional Requirement,Code reuse across CRUD modules,~12 near-duplicate CRUD files (authors/add.php vs members/add.php),Not met; proposed target,High,,Extraction scope TBD
+NFR-026,Non-Functional Requirement,Separation of concerns,issue_return/issue.php mixes transactions :28-64 and markup :70-115 (representative),Not met; proposed target,High,,Architecture TBD
+NFR-027,Non-Functional Requirement,Consistent bootstrapping,auth/index.php:2 (__DIR__) vs auth/register.php:8 (cwd-relative); mixed session_start patterns,Not met; proposed target,High,,
+NFR-028,Non-Functional Requirement,Documentation currency,README vs auth/index.php:69 (C-03); user_schema.sql:20-24 (C-02); README Usage Notes (C-07),Not met,High,C-02; C-03; C-07,
+NFR-029,Non-Functional Requirement,Deployment-path independence,config/paths.php:15-46 BASE_URL computation,Met (mechanism),High,,Runtime not executed during analysis
+NFR-030,Non-Functional Requirement,Unicode character-set safety,config/db.php:25 utf8mb4,Met,High,,Column collations unspecified in schema
+NFR-031,Non-Functional Requirement,Documented platform assumptions,README Prerequisites (XAMPP/WAMP/MAMP mysqli),Documented constraint,Medium,,No PHP/MySQL version pins
+UC-01,Use Case,Log in,auth/index.php; auth/login_handler.php,Verified workflow,High,FR-001; FR-002; FR-003; FR-007; FR-008; FR-009,A2 staff blocked (C-01); no rate limit (BR-008)
+UC-02,Use Case,Log out,auth/logout.php:1-6,Verified workflow,High,FR-006,Remember-me cookie not cleared (BR-005)
+UC-03,Use Case,Register a staff account,auth/register.php,Verified workflow,High,FR-004; FR-005,Goal not truly achieved (C-01)
+UC-04,Use Case,View the dashboard,index.php,Verified workflow,High,FR-011; FR-012; FR-013; FR-014; FR-015; FR-016,5 COUNT queries; output before queries
+UC-05,Use Case,List books,books/view.php,Verified workflow,High,FR-017,No pagination; GET delete links
+UC-06,Use Case,Add a book,books/add.php,Verified workflow,High,FR-018; FR-019; FR-022,No authentication; no CSRF
+UC-07,Use Case,Edit a book,books/edit.php,Verified workflow,High,FR-020; FR-021; FR-022,Availability overwrite (C-05); total reduction (C-08)
+UC-08,Use Case,Delete a book,books/delete.php; books/view.php:40-42,Verified workflow,High,FR-023; FR-024,GET-based; cascades history (C-04)
+UC-09,Use Case,List authors,authors/view.php,Verified workflow,High,FR-025,No authentication
+UC-10,Use Case,Add or edit an author,authors/add.php; authors/edit.php,Verified workflow,High,FR-026; FR-027,No authentication; no CSRF
+UC-11,Use Case,Delete an author,authors/delete.php; authors/view.php:34-36,Verified workflow,High,FR-028,Books become authorless by design (BR-021)
+UC-12,Use Case,List members,members/view.php,Verified workflow,High,FR-029,No authentication
+UC-13,Use Case,Add or edit a member,members/add.php; members/edit.php,Verified workflow,High,FR-030; FR-031,No authentication; no CSRF
+UC-14,Use Case,Delete a member,members/delete.php; members/view.php:37-39,Verified workflow,High,FR-032; FR-033,GET-based; cascades history (C-04)
+UC-15,Use Case,Issue a book to a member,issue_return/issue.php,Verified workflow,High,FR-034; FR-035; FR-036; FR-037; FR-038,No auth; race defense verified; no loan limits (BR-032)
+UC-16,Use Case,Process a book return,issue_return/return.php,Verified workflow,High,FR-039; FR-040; FR-041,Double-return guard verified
+UC-17,Use Case,Monitor issued and overdue books,issue_return/status.php,Verified workflow,High,FR-042; FR-043; FR-044,Informational only (BR-041)
+UC-18,Use Case,Search the catalog,search.php,Verified workflow,High,FR-045; FR-046,Exposed without login; ISBN not searchable
+UC-19,Use Case,Verify the installation,test_connection.php,Verified workflow,High,FR-047,Temporary artifact retained (GAP-010)
+GAP-001,Gap,No password change or reset feature,Absence confirmed; database/user_schema.sql:20-24 instructs change,Absence confirmed,High,BR-012; C-02; NFR-028,Documentation references nonexistent feature
+GAP-002,Gap,No user-management interface,Absence confirmed (users touched only by login registration seed),Absence confirmed,High,BR-007,Role field not manageable in-app
+GAP-003,Gap,requireRole never invoked,includes/auth.php:34-40; zero call sites,Absence confirmed,High,BR-007; NFR-004,Vestigial authorization
+GAP-004,Gap,Staff accounts cannot authenticate,login_handler.php:49 + register.php:51,Verified conflict,High,BR-011; C-01,Registration dead-end
+GAP-005,Gap,16 of 18 pages lack authentication,index.php:4 and books/view.php:4 only enforcement,Verified,High,FR-010; BR-006; NFR-004; CR-06,Most severe security gap
+GAP-006,Gap,No CSRF protection; GET-based deletions,No tokens; books/view.php:40-42; authors/view.php:34-36; members/view.php:37-39,Verified,High,NFR-005,Cross-site forgeable mutations
+GAP-007,Gap,No pagination or row limits on lists,No LIMIT in any list query,Absence confirmed,High,NFR-016,
+GAP-008,Gap,No overdue handling beyond display,No fine notify or status-transition code,Absence confirmed,High,BR-041,
+GAP-009,Gap,No loan-period policy enforcement,issue_return/issue.php:22-26 only past-date check,Absence confirmed,High,BR-031; CR-04,14 days is UI default only
+GAP-010,Gap,Temporary artifacts committed,test_connection.php:9-12; config/paths.php:54-63,Verified,High,NFR-008; FR-047,Debug panel leaks filesystem paths
+GAP-011,Gap,No audit trail,Absence confirmed; database/library_db.sql:44-54 no staff reference,Absence confirmed,High,NFR-024,Operator identity never recorded
+GAP-012,Gap,No availability reconciliation mechanism,books/edit.php:24; no reconciliation code,Verified,High,BR-038; CR-02,Counts can drift
+GAP-013,Gap,Historical issue records destroyed on delete,database/library_db.sql:52-53 CASCADE; app guards active only,Verified,High,BR-020; BR-025; NFR-023; C-04,Lending history not durable
+GAP-014,Gap,No ISBN phone or category-format validation,books/add.php; members/add.php (absence),Absence confirmed,High,BR-022; BR-046,Data quality by operator discipline only
+GAP-015,Gap,No member eligibility concept,database/library_db.sql:36-41; no issue-time checks,Absence confirmed,High,BR-026; BR-032,Any member lent to indefinitely
