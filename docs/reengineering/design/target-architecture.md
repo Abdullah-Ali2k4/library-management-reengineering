@@ -42,33 +42,35 @@ Rather than embarking on a high-risk, full rewrite with an external heavyweight 
 
 ## 2. High-Level Target Architecture
 
+
 ```mermaid
-graph TD
-    Client[HTTP Client / Browser] -->|HTTP GET/POST| Bootstrap[src/bootstrap.php\nCentralized Initialization]
+flowchart TD
+    Client["HTTP Client / Browser"] -->|HTTP GET/POST| Bootstrap["src/bootstrap.php<br/>Centralized Initialization"]
 
-    subgraph Presentation Layer
-        Bootstrap --> Router[Page Controllers / Handlers\nbooks/view.php, issue_return/issue.php, etc.]
-        Router --> ViewPartials[HTML Partials & Templates\nincludes/header.php, footer.php, navbar.php]
+    subgraph Presentation["Presentation Layer"]
+        Bootstrap --> Router["Page Controllers / Handlers<br/>books/view.php, issue_return/issue.php, etc."]
+        Router --> ViewPartials["HTML Partials & Templates<br/>includes/header.php, footer.php, navbar.php"]
     end
 
-    subgraph Service Layer (Domain Logic)
-        Router --> AuthService[AuthService\nLogin, Logout, Roles, Sessions]
-        Router --> CirculationService[CirculationService\nIssue, Return, Loan Verification]
-        Router --> BookService[BookService\nInventory, Copy Reconciliation]
-        Router --> MemberService[MemberService\nMember Lifecycle, Active Checks]
-        Router --> AuthorService[AuthorService\nAuthor CRUD Operations]
+    subgraph Services["Service Layer (Domain Logic)"]
+        Router --> AuthService["AuthService<br/>Login, Logout, Roles, Sessions"]
+        Router --> CirculationService["CirculationService<br/>Issue, Return, Loan Verification"]
+        Router --> BookService["BookService<br/>Inventory, Copy Reconciliation"]
+        Router --> MemberService["MemberService<br/>Member Lifecycle, Active Checks"]
+        Router --> AuthorService["AuthorService<br/>Author CRUD Operations"]
     end
 
-    subgraph Data Access Layer
-        AuthService --> DB[Database Provider\nCentralized Prepared Statements]
+    subgraph DataAccess["Data Access Layer"]
+        AuthService --> DB["Database Provider<br/>Centralized Prepared Statements"]
         CirculationService --> DB
         BookService --> DB
         MemberService --> DB
         AuthorService --> DB
     end
 
-    DB --> MySQL[(MySQL 8.0+ / MariaDB\nlibrary_db)]
+    DB --> MySQL[("MySQL 8.0+ / MariaDB<br/>library_db")]
 ```
+
 
 ---
 
