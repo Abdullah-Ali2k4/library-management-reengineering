@@ -1,26 +1,26 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 requireRole('admin', 'staff');
+require_once __DIR__ . '/../src/Services/CirculationService.php';
 
 require_once '../config/db.php';
 
 $errors = [];
 $success = false;
 
-// Only show books that currently have at least 1 available copy
 $books_result = $conn->query("SELECT book_id, title, available_copies FROM books WHERE available_copies > 0 ORDER BY title");
 $members_result = $conn->query("SELECT member_id, full_name FROM members ORDER BY full_name");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     requireCsrf();
-    $book_id   = trim($_POST['book_id'] ?? '');
-    $member_id = trim($_POST['member_id'] ?? '');
-    $due_date  = trim($_POST['due_date'] ?? '');
+    $book_id = (int)($_POST['book_id'] ?? 0);
+    $member_id = (int)($_POST['member_id'] ?? 0);
+    $due_date = trim((string)($_POST['due_date'] ?? ''));
 
-    if ($book_id === '') {
+    if ($book_id <= 0) {
         $errors[] = "Please select a book.";
     }
-    if ($member_id === '') {
+    if ($member_id <= 0) {
         $errors[] = "Please select a member.";
     }
     if ($due_date === '') {
@@ -30,39 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        // Use a transaction so the issue record and the copy count
-        // either both succeed or both fail together
-        $conn->begin_transaction();
-
         try {
-            // Re-check availability inside the transaction to avoid a race
-            // condition where two people issue the last copy at once
-            $check = $conn->prepare("SELECT available_copies FROM books WHERE book_id = ? FOR UPDATE");
-            $check->bind_param("i", $book_id);
-            $check->execute();
-            $book = $check->get_result()->fetch_assoc();
-            $check->close();
-
-            if (!$book || $book['available_copies'] < 1) {
-                throw new Exception("This book is no longer available.");
-            }
-
-            $issue_date = date('Y-m-d');
-
-            $stmt = $conn->prepare("INSERT INTO issued_books (book_id, member_id, issue_date, due_date, status) VALUES (?, ?, ?, ?, 'issued')");
-            $stmt->bind_param("iiss", $book_id, $member_id, $issue_date, $due_date);
-            $stmt->execute();
-            $stmt->close();
-
-            $update = $conn->prepare("UPDATE books SET available_copies = available_copies - 1 WHERE book_id = ?");
-            $update->bind_param("i", $book_id);
-            $update->execute();
-            $update->close();
-
-            $conn->commit();
+            CirculationService::issueBook($conn, $book_id, $member_id, $due_date);
             $success = true;
-        } catch (Exception $e) {
-            $conn->rollback();
+        } catch (Throwable $e) {
             $errors[] = $e->getMessage();
         }
     }

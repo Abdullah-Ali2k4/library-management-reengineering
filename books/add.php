@@ -1,36 +1,31 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 requireRole('admin', 'staff');
+require_once __DIR__ . '/../src/Services/BookService.php';
+require_once __DIR__ . '/../src/Services/InventoryService.php';
 
 require_once '../config/db.php';
 
 $errors = [];
 $success = false;
 
-// Fetch authors for the dropdown
 $authors_result = $conn->query("SELECT author_id, first_name, last_name FROM authors ORDER BY first_name");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     requireCsrf();
-    // --- Collect + trim input ---
-    $title            = trim($_POST['title'] ?? '');
-    $author_id        = trim($_POST['author_id'] ?? '');
-    $isbn             = trim($_POST['isbn'] ?? '');
-    $category         = trim($_POST['category'] ?? '');
-    $total_copies     = trim($_POST['total_copies'] ?? '');
+    $title = trim((string)($_POST['title'] ?? ''));
+    $author_id = trim((string)($_POST['author_id'] ?? ''));
+    $isbn = trim((string)($_POST['isbn'] ?? ''));
+    $category = trim((string)($_POST['category'] ?? ''));
+    $total_copies = trim((string)($_POST['total_copies'] ?? ''));
 
-    // --- Server-side validation ---
-    if ($title === '') {
-        $errors[] = "Title is required.";
-    }
-    if ($author_id === '') {
-        $errors[] = "Please select an author.";
-    }
-    if ($total_copies === '' || !is_numeric($total_copies) || (int)$total_copies < 1) {
-        $errors[] = "Total copies must be a number of at least 1.";
-    }
+    $errors = BookService::validateCreateData([
+        'title' => $title,
+        'author_id' => $author_id,
+        'total_copies' => $total_copies,
+    ]);
+
     if ($isbn !== '') {
-        // Check ISBN uniqueness
         $check = $conn->prepare("SELECT book_id FROM books WHERE isbn = ?");
         $check->bind_param("s", $isbn);
         $check->execute();
@@ -41,10 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $check->close();
     }
 
-    // --- Insert if valid ---
     if (empty($errors)) {
         $total_copies = (int)$total_copies;
-        $available_copies = $total_copies; // new book starts fully available
+        $available_copies = $total_copies;
 
         $stmt = $conn->prepare("INSERT INTO books (title, author_id, isbn, category, total_copies, available_copies) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sisssi", $title, $author_id, $isbn, $category, $total_copies, $available_copies);

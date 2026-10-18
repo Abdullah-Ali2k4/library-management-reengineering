@@ -1,13 +1,13 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 requireRole('admin', 'staff');
+require_once __DIR__ . '/../src/Services/CirculationService.php';
 
 require_once '../config/db.php';
 
 $errors = [];
 $success = false;
 
-// Only show records that are still currently issued (not yet returned)
 $issued_result = $conn->query("
     SELECT issued_books.issue_id, books.title, members.full_name, issued_books.due_date
     FROM issued_books
@@ -19,50 +19,20 @@ $issued_result = $conn->query("
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     requireCsrf();
-    $issue_id = trim($_POST['issue_id'] ?? '');
+    $issue_id = (int)($_POST['issue_id'] ?? 0);
 
-    if ($issue_id === '') {
+    if ($issue_id <= 0) {
         $errors[] = "Please select a book to return.";
     }
 
     if (empty($errors)) {
-        $conn->begin_transaction();
-
         try {
-            // Lock and confirm this issue record is still active
-            $check = $conn->prepare("SELECT book_id, status FROM issued_books WHERE issue_id = ? FOR UPDATE");
-            $check->bind_param("i", $issue_id);
-            $check->execute();
-            $record = $check->get_result()->fetch_assoc();
-            $check->close();
-
-            if (!$record) {
-                throw new Exception("Issue record not found.");
-            }
-            if ($record['status'] === 'returned') {
-                throw new Exception("This book has already been returned.");
-            }
-
-            $return_date = date('Y-m-d');
-
-            $update_issue = $conn->prepare("UPDATE issued_books SET status = 'returned', return_date = ? WHERE issue_id = ?");
-            $update_issue->bind_param("si", $return_date, $issue_id);
-            $update_issue->execute();
-            $update_issue->close();
-
-            $update_book = $conn->prepare("UPDATE books SET available_copies = available_copies + 1 WHERE book_id = ?");
-            $update_book->bind_param("i", $record['book_id']);
-            $update_book->execute();
-            $update_book->close();
-
-            $conn->commit();
+            CirculationService::returnBook($conn, $issue_id);
             $success = true;
-        } catch (Exception $e) {
-            $conn->rollback();
+        } catch (Throwable $e) {
             $errors[] = $e->getMessage();
         }
 
-        // Refresh the list after a successful return
         $issued_result = $conn->query("
             SELECT issued_books.issue_id, books.title, members.full_name, issued_books.due_date
             FROM issued_books
