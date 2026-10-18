@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+requireRole('admin', 'staff');
+
 require_once '../config/db.php';
 include '../includes/header.php';
 

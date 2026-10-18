@@ -14,19 +14,5 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================
--- Seed one default admin account so you can log
--- in immediately. Username: admin  Password: admin123
---
--- IMPORTANT: this hash was generated with PHP's
--- password_hash('admin123', PASSWORD_DEFAULT).
--- Change this password after your first login, and
--- definitely before submitting/presenting the project.
--- ============================================
-INSERT INTO users (username, email, password_hash, role)
-VALUES (
-    'admin',
-    'admin@library.local',
-    '$2b$10$Guc5blPUzYhoDPZeAPKVl.Xi1LOVV77BR5KiyHUhr2SyJxqyJqQ/.',
-    'admin'
-);
+-- No default administrator is seeded. Create the first administrator
+-- using scripts/create_admin.php from the command line (see README).

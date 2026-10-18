@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/includes/auth.php';
+requireLogin();
 require_once 'config/db.php';
 include 'includes/header.php';
 

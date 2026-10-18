@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+requireLogin();
+
 require_once '../config/db.php';
 include '../includes/header.php';
 
@@ -30,10 +33,13 @@ $result = $conn->query("
             <td><?php echo htmlspecialchars(mb_strimwidth($row['bio'] ?? '', 0, 80, '...')) ?: '—'; ?></td>
             <td><?php echo (int)$row['book_count']; ?></td>
             <td class="actions">
-                <a href="edit.php?id=<?php echo (int)$row['author_id']; ?>">Edit</a>
-                <a href="delete.php?id=<?php echo (int)$row['author_id']; ?>"
-                   class="delete-link"
-                   onclick="return confirm('Delete this author? Their books will remain but show no author.');">Delete</a>
+                <a href="edit.php?id=<?php echo (int)$row['author_id']; ?>" class="btn-edit">Edit</a>
+                <form method="POST" action="delete.php" class="inline-delete-form" onsubmit="return confirm('Delete this record?');">
+<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="id" value="<?php echo (int)$row['author_id']; ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
+                    <button type="submit" class="btn-delete">Delete</button>
+                </form>
             </td>
         </tr>
         <?php endwhile; ?>

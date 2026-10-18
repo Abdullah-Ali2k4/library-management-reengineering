@@ -24,6 +24,7 @@ function nav_active($page, $folder = null) {
 
 $loggedInUser = function_exists('currentUser') ? currentUser() : null;
 $displayName = $loggedInUser['username'] ?? 'Guest';
+$displayRole = $loggedInUser['role'] ?? '';
 $initial = strtoupper(substr($displayName, 0, 1));
 ?>
 <!DOCTYPE html>
@@ -96,12 +97,14 @@ $initial = strtoupper(substr($displayName, 0, 1));
                 <span class="sidebar-avatar"><?php echo htmlspecialchars($initial); ?></span>
                 <div>
                     <div class="sidebar-user-label">Welcome,</div>
-                    <div class="sidebar-user-name"><?php echo htmlspecialchars($displayName); ?></div>
+                    <div class="sidebar-user-name"><?php echo htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8'); ?></div>
+                    <div class="sidebar-user-label"><?php echo htmlspecialchars(ucfirst($displayRole), ENT_QUOTES, 'UTF-8'); ?></div>
                 </div>
             </div>
-            <a href="<?php echo BASE_URL; ?>auth/logout.php" class="sidebar-logout-btn">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
-            </a>
+            <form method="POST" action="<?php echo BASE_URL; ?>auth/logout.php" class="sidebar-logout-form">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
+                <button type="submit" class="sidebar-logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+            </form>
         </div>
 
     </aside>
