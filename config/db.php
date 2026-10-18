@@ -1,26 +1,18 @@
 <?php
-/**
- * Database Connection File
- * -------------------------
- * Include this at the top of every page that needs the database:
- *   require_once 'config/db.php';        (from project root)
- *   require_once '../config/db.php';     (from a subfolder like books/)
- */
-
-// --- Connection settings ---
-$db_host = "localhost";
-$db_user = "root";      // default XAMPP/WAMP username
-$db_pass = "";          // default XAMPP/WAMP password is blank
-$db_name = "library_db";
-
-// --- Create connection ---
-$conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
-
-// --- Check connection ---
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Configure DB_HOST, DB_USER, DB_PASS and DB_NAME in the server environment.
+// XAMPP defaults are retained for local development only.
+$db_host = getenv('DB_HOST') ?: 'localhost';
+$db_user = getenv('DB_USER') !== false ? getenv('DB_USER') : 'root';
+$db_pass = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
+$db_name = getenv('DB_NAME') ?: 'library_db';
+mysqli_report(MYSQLI_REPORT_OFF);
+$conn = @new mysqli($db_host, $db_user, $db_pass, $db_name);
+if ($conn->connect_errno) {
+    error_log('Library DB connection failed (' . $conn->connect_errno . '): ' . $conn->connect_error);
+    http_response_code(500);
+    exit('The application is temporarily unavailable. Please try again later.');
 }
-
-// --- Set charset (prevents encoding issues with special characters) ---
-$conn->set_charset("utf8mb4");
-?>
+if (!$conn->set_charset('utf8mb4')) {
+    error_log('Library DB charset configuration failed: ' . $conn->error);
+    http_response_code(500); exit('The application is temporarily unavailable. Please try again later.');
+}

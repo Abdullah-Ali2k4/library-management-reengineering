@@ -36,10 +36,13 @@ $result = $conn->query("
             <td><?php echo htmlspecialchars($row['category'] ?: '—'); ?></td>
             <td><?php echo (int)$row['available_copies']; ?> / <?php echo (int)$row['total_copies']; ?></td>
             <td class="actions">
-                <a href="edit.php?id=<?php echo (int)$row['book_id']; ?>">Edit</a>
-                <a href="delete.php?id=<?php echo (int)$row['book_id']; ?>"
-                   class="delete-link"
-                   onclick="return confirm('Are you sure you want to delete this book?');">Delete</a>
+                <a href="edit.php?id=<?php echo (int)$row['book_id']; ?>" class="btn-edit">Edit</a>
+                <form method="POST" action="delete.php" class="inline-delete-form" onsubmit="return confirm('Delete this record?');">
+<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="id" value="<?php echo (int)$row['book_id']; ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
+                    <button type="submit" class="btn-delete">Delete</button>
+                </form>
             </td>
         </tr>
         <?php endwhile; ?>

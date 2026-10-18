@@ -4,7 +4,7 @@ A beginner-friendly, straightforward Library Management System built with PHP an
 
 ## 🌟 Features
 
-*   **Authentication:** User login, registration, and logout with secure session management.
+*   **Authentication:** Session-based login/logout, server-side role checks, CSRF-protected state changes, and staff-only public registration.
 *   **Dashboard Overview:** See total books, authors, members, and overdue books at a glance.
 *   **Book Management:** Add, edit, view, and delete books and track total vs. available copies.
 *   **Author & Member Management:** Manage library members and book authors.
@@ -32,7 +32,7 @@ The database consists of five main tables. The schemas are located in the `datab
 | **`members`** | `library_db.sql` | Stores registered members (borrowers). | `member_id` | `full_name`, `email`, `phone` |
 | **`issued_books`** | `library_db.sql` | Tracks the check-out and return process. | `issue_id` | `issue_date`, `due_date`, `return_date`, `status`<br>*(FK: `book_id` → `books`)*<br>*(FK: `member_id` → `members`)* |
 
-*Note: A default admin account is created with Username: `admin`, E-mail: `admin@library.local` Password: `admin123`*
+*Security note: no default administrator account is seeded. Create the first administrator using the CLI bootstrap below; do not commit credentials.*
 
 ---S
 
@@ -71,7 +71,7 @@ If your database has a different username or password, you can update it in the 
 **4. Run the Application**
 Open your web browser and navigate to the project folder:
 `http://localhost/Library-management-system/`
-*(You can login using Username: `admin`, E-mail: `admin@library.local` and Password: `admin123`)*
+**Create the initial administrator (one time):** Open a terminal in the project directory and run `php scripts/create_admin.php`. This is CLI-only and refuses to run after any user exists. Then sign in using the credentials you entered.
 
 ## 📂 Project Structure
 
@@ -89,3 +89,9 @@ Open your web browser and navigate to the project folder:
 
 *   **Dynamic Paths:** The app is designed to work whether you put it in the root folder or a subfolder thanks to `config/paths.php`. 
 *   **Security:** This app uses basic authentication and procedural PHP. While great for learning and small projects, if deploying to a live production server, consider implementing further protections against SQL injection and CSRF attacks.
+
+## Security and verification (Issues 9–12)
+
+Protected routes require a session. Administrators manage catalog records; staff and administrators may use circulation workflows. Public registration can create staff accounts only. Destructive book, author, and member actions use POST plus session CSRF tokens and require admin role. Book/member records with lending history are retained to avoid deleting audit history. Logout is also a CSRF-protected POST.
+
+`test_connection.php` and the `?debug_paths=1` path disclosure have been removed. Database connection failures show a generic user-facing message and log details server-side. Run `php tests/security_regression.php` and lint PHP files with `php -l`. See `docs/reengineering/verification/issues-9-12.md`.

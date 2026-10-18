@@ -382,3 +382,8 @@ The following decisions represent design choices that require consensus before i
 3. **Password Change Workflow:**
    - *Question:* Should a password update form be introduced into `auth/` or `profile/` to address Conflict C-02?
    - *Recommendation:* If scope permits, add a minimal `auth/change_password.php` for authenticated users; otherwise, document the limitation clearly in Issue 20.
+
+
+## Implementation status update (Issues 9–10)
+
+The implementation now enforces the role matrix above in server-side entry points: staff and administrators can create/edit books, authors, and members and perform circulation; only administrators can delete books, authors, and members. Public registration creates staff accounts only. The initial administrator is created through `scripts/create_admin.php` from CLI, only when the users table is empty. The legacy hard-coded `admin123` seed has been removed. See `docs/reengineering/verification/issues-9-12.md` for automated verification.

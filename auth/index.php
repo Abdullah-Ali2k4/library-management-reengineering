@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/paths.php';
-session_start();
+require_once __DIR__ . '/../includes/auth.php';
 
 if (isset($_SESSION['user_id'])) {
     header("Location: " . BASE_URL . "index.php");
@@ -17,7 +17,7 @@ unset($_SESSION['login_error']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Admin Login - Library Management System</title>
+    <title>Sign In - Library Management System</title>
 
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/style.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/auth.css">
@@ -46,7 +46,7 @@ unset($_SESSION['login_error']);
 
             <div class="login-card-body">
 
-                <h1>Admin Sign In</h1>
+                <h1>Sign In</h1>
 
                 <div class="access-notice">
                     <svg xmlns="http://www.w3.org/2000/svg" class="notice-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -66,7 +66,7 @@ unset($_SESSION['login_error']);
                         <svg xmlns="http://www.w3.org/2000/svg" class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                         </svg>
-                        <input type="email" id="email" name="email" placeholder="Admin Email" required autofocus>
+                        <input type="email" id="email" name="email" placeholder="Email" required autofocus>
                     </div>
 
                     <div class="input-wrapper">

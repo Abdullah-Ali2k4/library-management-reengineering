@@ -5,7 +5,7 @@
  * ============================================================
  */
 require_once __DIR__ . '/../config/paths.php';
-require_once '../config/db.php';
+require_once __DIR__ . '/../config/db.php';
 require_once '../includes/auth.php';
 
 if (isLoggedIn()) {
@@ -17,19 +17,20 @@ $errors = [];
 $success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username         = trim($_POST['username'] ?? '');
-    $email            = trim($_POST['email'] ?? '');
-    $password         = trim($_POST['password'] ?? '');
-    $confirm_password = trim($_POST['confirm_password'] ?? '');
+    requirePost(); requireCsrf();
+    $username         = trim((string)($_POST['username'] ?? ''));
+    $email            = trim((string)($_POST['email'] ?? ''));
+    $password         = (string)($_POST['password'] ?? '');
+    $confirm_password = (string)($_POST['confirm_password'] ?? '');
 
-    if ($username === '' || $email === '' || $password === '') {
+    if ($username === '' || strlen($username) > 50 || $email === '' || $password === '') {
         $errors[] = "All fields are required.";
     }
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Please enter a valid email address.";
     }
-    if (strlen($password) < 6) {
-        $errors[] = "Password must be at least 6 characters.";
+    if (strlen($password) < 10) {
+        $errors[] = "Password must be at least 10 characters.";
     }
     if ($password !== $confirm_password) {
         $errors[] = "Passwords do not match.";
@@ -104,6 +105,7 @@ $conn->close();
 
     <?php if (!$success): ?>
     <form method="POST" action="register.php">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
         <label for="username">Username</label>
         <input type="text" id="username" name="username" required
                value="<?php echo isset($username) ? htmlspecialchars($username) : ''; ?>">
