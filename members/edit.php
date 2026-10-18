@@ -87,8 +87,8 @@ include '../includes/header.php';
     </div>
 <?php endif; ?>
 
-<form method="POST" action="edit.php?id=<?php echo $member_id; ?>
-<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8'); ?>">" class="validate-form">
+<form method="POST" action="edit.php?id=<?php echo $member_id; ?>" class="validate-form">
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
     <input type="hidden" name="member_id" value="<?php echo $member_id; ?>">
 
     <label for="full_name">Full Name</label>

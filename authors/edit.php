@@ -75,8 +75,8 @@ include '../includes/header.php';
     </div>
 <?php endif; ?>
 
-<form method="POST" action="edit.php?id=<?php echo $author_id; ?>
-<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8'); ?>">" class="validate-form">
+<form method="POST" action="edit.php?id=<?php echo $author_id; ?>" class="validate-form">
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
     <input type="hidden" name="author_id" value="<?php echo $author_id; ?>">
 
     <label for="first_name">First Name</label>

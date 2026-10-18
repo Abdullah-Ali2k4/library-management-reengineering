@@ -32,7 +32,7 @@ $user = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 $conn->close();
 
-if (!$user || !in_array($user['role'], ['admin', 'staff'], true) || !password_verify($password, $user['password_hash'])) {
+if (!$user || !in_array($user['role'], ['admin','staff'], true) || !password_verify($password, $user['password_hash'])) {
     $_SESSION['login_error'] = 'Invalid email or password.';
     header('Location: ' . BASE_URL . 'auth/index.php');
     exit;
